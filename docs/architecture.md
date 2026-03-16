@@ -1,76 +1,76 @@
 # Persona-craw — Architecture
 
----
-
-## System Overview
-
-Persona-craw is organized into four layers. The serving side handles user interaction. The data layer stores experience and skills. The learning side converts experience into policy improvements. The operations layer ensures safe, continuous updates.
-
-```mermaid
-flowchart TB
-    subgraph serving ["Serving Layer"]
-        Runtime["Agent Runtime"]
-        Gateway["Gateway / Proxy"]
-    end
-
-    subgraph data ["Data Layer"]
-        Store["Experience Store"]
-        SkillBank["Skill Bank"]
-    end
-
-    subgraph learning ["Learning Layer"]
-        Reward["Reward Pipeline"]
-        Trainer["RL Training Engine"]
-        Distiller["Skill Distillation"]
-    end
-
-    subgraph ops ["Operations Layer"]
-        Scheduler["Scheduler"]
-        Eval["Evaluation"]
-    end
-
-    Runtime --> Gateway
-    Gateway -->|"trace capture"| Store
-    Gateway -->|"skill injection"| SkillBank
-    Store --> Reward
-    Store --> Distiller
-    Distiller --> SkillBank
-    Reward --> Trainer
-    Trainer --> Scheduler
-    Scheduler -->|"safe deploy"| Runtime
-    Eval --> Scheduler
 ```
-
----
-
-## Serving Layer
-
-**Agent Runtime** — Executes user tasks using LLM and tools (browser, terminal, IDE, APIs). Records every step as a structured trajectory.
-
-**Gateway / Proxy** — The single entry point. Intercepts model requests, injects retrieved skills into the prompt, captures interaction traces, and forwards requests to the model server. OpenAI-compatible — external agents only need to change `base_url`.
-
----
-
-## Data Layer
-
-**Experience Store** — Central repository for all interaction data. Supports two tiers: a hot tier for recent interactions (fed to reward pipeline and trainer) and a cold tier for long-term storage (fed to skill distillation and evaluation).
-
-**Skill Bank** — Hierarchical store of distilled skills. Each skill has trigger conditions, strategy steps, anti-patterns, quality scores, and an embedding for semantic retrieval. Organized by level: general, domain, task-specific.
-
----
-
-## Learning Layer
-
-**Reward Pipeline** — Converts raw experience into training signals. Three sources: heuristic reward (rule-based), learned reward (LLM-as-judge / PRM), and delayed outcome reward (task verification). Signals are fused into step-level and episode-level rewards.
-
-**Skill Distillation** — Transforms the context → memory → skill pipeline. Detects patterns across interaction history, consolidates structured memory, and distills compact skills. Handles skill evolution, merging, deprecation, and promotion across hierarchy levels.
-
-**RL Training Engine** — Updates agent policy from rewards and experience. Pluggable backend architecture supporting multiple training modes: skills-only, LoRA fine-tuning, online GRPO, distillation, offline SFT. Backends include Tinker, MinT, and local GRPO.
-
----
-
-## Operations Layer
-
-**Scheduler** — Controls when and how model updates are deployed. Strategies include night training, idle-time training, calendar-window training, and manual approval. Safety mechanisms: regression testing before deploy, canary rollout, automatic rollback.
-
-**Evaluation** — Measures agent improvement over time. Online evaluation from live interaction, offline benchmarking, skill quality assessment, and A/B testing between model versions.
+persona-craw/
+├── serving/
+│   ├── runtime/
+│   │   ├── agent.py
+│   │   ├── tool_manager.py
+│   │   ├── trajectory_recorder.py
+│   │   └── session.py
+│   └── gateway/
+│       ├── proxy.py
+│       ├── skill_injector.py
+│       ├── trace_capture.py
+│       └── openai_compat.py
+├── data/
+│   ├── experience_store/
+│   │   ├── hot_tier.py
+│   │   ├── cold_tier.py
+│   │   ├── schema.py
+│   │   └── migration.py
+│   └── skill_bank/
+│       ├── store.py
+│       ├── retrieval.py
+│       ├── embedding.py
+│       ├── hierarchy.py
+│       └── schema.py
+├── learning/
+│   ├── reward/
+│   │   ├── heuristic_reward.py
+│   │   ├── learned_reward.py
+│   │   ├── outcome_reward.py
+│   │   ├── reward_fusion.py
+│   │   └── credit_assignment.py
+│   ├── skill_distillation/
+│   │   ├── pattern_detector.py
+│   │   ├── memory_consolidator.py
+│   │   ├── skill_extractor.py
+│   │   ├── skill_evolution.py
+│   │   └── skill_promotion.py
+│   └── trainer/
+│       ├── engine.py
+│       ├── grpo.py
+│       ├── dpo.py
+│       ├── lora_rl.py
+│       ├── sft.py
+│       └── backends/
+│           ├── tinker.py
+│           ├── mint.py
+│           └── local.py
+├── ops/
+│   ├── scheduler/
+│   │   ├── deploy_scheduler.py
+│   │   ├── training_window.py
+│   │   ├── canary_rollout.py
+│   │   └── rollback.py
+│   └── evaluation/
+│       ├── online_eval.py
+│       ├── offline_benchmark.py
+│       ├── skill_quality.py
+│       └── ab_test.py
+├── routing/
+│   ├── task_router.py
+│   ├── complexity_estimator.py
+│   └── cloud_local_bridge.py
+├── master_apprentice/
+│   ├── master_explorer.py
+│   ├── knowledge_distiller.py
+│   ├── apprentice_executor.py
+│   └── escalation.py
+└── config/
+    ├── default.yaml
+    ├── reward.yaml
+    ├── training.yaml
+    └── routing.yaml
+```
