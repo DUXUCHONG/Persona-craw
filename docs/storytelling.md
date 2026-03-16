@@ -1,5 +1,10 @@
 # Persona-craw — Stories
 
+<p align="center">
+  <a href="storytelling.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a>
+  <a href="storytelling_cn.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a>
+</p>
+
 ---
 
 ## Life Assistant

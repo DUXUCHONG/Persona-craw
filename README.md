@@ -4,6 +4,11 @@
 </p>
 
 <p align="center">
+  <a href="README.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a>
+  <a href="README_CN.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a>
+</p>
+
+<p align="center">
   <a href="docs/storytelling.md"><img src="https://img.shields.io/badge/docs-stories-red.svg" alt="Stories"></a>
   <a href="docs/product.md"><img src="https://img.shields.io/badge/docs-product-green.svg" alt="Product"></a>
   <a href="docs/research.md"><img src="https://img.shields.io/badge/docs-research-purple.svg" alt="Research"></a>

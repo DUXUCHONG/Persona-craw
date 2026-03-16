@@ -1,5 +1,10 @@
 # Persona-craw — Research
 
+<p align="center">
+  <a href="research.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a>
+  <a href="research_cn.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a>
+</p>
+
 ## Self-Evolving Agents: Reinforcement Learning from Daily Words
 
 Persona-craw investigates how AI agents can continuously improve by learning from everyday natural language interaction.
@@ -252,18 +257,5 @@ When the cloud model handles a complex task, its execution should feed back into
 - Fully autonomous self-evolving agent system
 
 ---
-
-## References
-
-- SkillRL — Skill distillation and hierarchical SkillBank ([arXiv 2602.08234](https://arxiv.org/abs/2602.08234))
-- SAGE — Skill-augmented RL ([arXiv 2512.17102](https://arxiv.org/abs/2512.17102))
-- DreamGym — Agent-level experience synthesis ([arXiv 2511.03773](https://arxiv.org/abs/2511.03773))
-- Agent Lightning — Training-agent disaggregation ([arXiv 2508.03680](https://arxiv.org/abs/2508.03680))
-- OpenClaw-RL — Async online RL for LLM agents
-- Claw-R1 — Gateway/DataPool middleware
-- MetaClaw — Skill injection and idle-window model updates
-- MinT — Lightweight online training backend
-- Tinker — Distributed RL training orchestration
-- DeepSeek-R1 — GRPO ([arXiv 2501.12948](https://arxiv.org/abs/2501.12948))
 
 Survey: [Awesome Agentic RL](https://github.com/DUXUCHONG/Awesome-Agentic-RL)

@@ -1,5 +1,10 @@
 # Persona-craw — Product
 
+<p align="center">
+  <a href="product.md"><img src="https://img.shields.io/badge/English-blue?style=for-the-badge" alt="English"></a>
+  <a href="product_cn.md"><img src="https://img.shields.io/badge/中文-red?style=for-the-badge" alt="中文"></a>
+</p>
+
 > The agent gets better every day.
 
 ---
