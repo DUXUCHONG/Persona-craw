@@ -100,13 +100,4 @@ Your words are the curriculum. Your habits are the reward signal. Your correctio
 
 ---
 
-## Inspiration
-
-Built on ideas from:
-
-- **SkillRL** — Trajectory-to-skill distillation
-- **OpenClaw-RL** — Async online RL for agents
-- **Claw-R1** — Gateway/DataPool middleware
-- **MetaClaw** — Skill injection and idle-window updates
-
-Survey: [Awesome Agentic RL](https://github.com/DUXUCHONG/Awesome-Agentic-RL)
+Related survey: [Awesome Agentic RL](https://github.com/DUXUCHONG/Awesome-Agentic-RL)
