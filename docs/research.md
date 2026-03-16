@@ -10,25 +10,51 @@ The core thesis:
 
 Current LLM agents are static after deployment. User corrections, preferences, and feedback are discarded at the end of each session. We propose a system that treats daily interaction as the primary training signal — converting natural language into rewards, distilling experience into skills, and updating agent policy through online reinforcement learning.
 
-The research is organized into five directions.
+The research is organized into four directions.
 
 ---
 
-## 1. Skill System
+## 1. Skill System: From Context to Memory to Skill
 
-### How does an agent extract, evolve, and compose reusable skills from daily interaction?
+### How does an agent turn raw interaction into persistent, reusable skills?
 
-Every day, users correct, guide, and refine the agent's behavior through natural conversation. These interactions contain repeating patterns — preferred workflows, common corrections, effective strategies. The Skill System turns these patterns into structured, reusable knowledge.
+Every day, users correct, guide, and refine the agent's behavior through natural conversation. These interactions accumulate as **context** — the raw stream of corrections, preferences, and feedback scattered across sessions.
 
-### 1.1 Skill Extraction from Daily Use
+But raw context cannot scale. An agent that talks to a user every day for months drowns in history. Storing conversation as flat memory leads to context explosion, retrieval noise, and degraded performance.
 
-When a user says "always use pytest" three times across different projects, that's not just a correction — it's a skill waiting to be distilled.
+The key insight: **context and memory are not the final form — skill is.**
+
+```
+context (raw interaction)
+    |
+    v
+memory (structured records)
+    |
+    v
+skill (compressed, reusable knowledge)
+```
+
+**Context** is what happened — the full stream of conversations, corrections, and reactions. It is rich but noisy and grows without bound.
+
+**Memory** is a structured intermediate — interaction records organized by task, domain, and outcome. It is more compact than raw context, but still grows linearly with usage.
+
+**Skill** is the final distilled form — a reusable strategy with trigger conditions, steps, and anti-patterns. Skills are compact, composable, and directly usable at inference time. They represent what the agent *learned*, not what it *experienced*.
+
+The Skill System manages this entire transformation pipeline: from raw context to organized memory to distilled skill.
+
+### 1.1 Context-to-Memory-to-Skill Transformation
+
+When a user says "always use pytest" three times across different projects, that's context. The system organizes it into memory (three correction records, same pattern, different contexts). Then it distills the memory into a skill: "for Python projects, use pytest as the test framework."
 
 **Research questions:**
 
-- How to detect recurring patterns across conversations and extract them as structured skills (trigger condition, strategy steps, anti-patterns)?
-- How to distinguish genuine skills from noise — one-off corrections vs. persistent preferences?
+- How to detect recurring patterns across raw context and consolidate them into structured memory records?
+- How to determine when accumulated memory is ready for skill distillation — what threshold of repetition, consistency, or confidence triggers the transformation?
 - How to extract skills from both success ("that worked perfectly") and failure ("don't ever do that again")?
+- How to handle the full lifecycle: context arrives continuously, memory consolidates periodically, skills are distilled when patterns stabilize?
+- **Memory consolidation.** How to merge, compress, and summarize related memories into unified skills — similar to how humans consolidate episodic memory into procedural knowledge during sleep?
+- **Selective forgetting.** When a memory has been distilled into a skill, the raw memory can be discarded. How to identify which memories are safely forgettable and which should be retained for future skill refinement?
+- **Budget allocation.** Given a fixed context window at inference time, how to allocate tokens between the current task, retrieved skills, and recent conversation history?
 
 ### 1.2 Skill Evolution through RL
 
@@ -38,7 +64,7 @@ Skills should not be static. As the agent accumulates more experience, skills mu
 
 - How to use reinforcement learning to refine skill quality over time? A skill that leads to user approval gets reinforced; one that gets corrected gets updated.
 - How to handle skill conflicts — when a new preference contradicts an old skill?
-- How to deprecate skills that no longer match user behavior?
+- How to deprecate skills that no longer match user behavior — feeding outdated skills back through the context → memory → skill pipeline for re-distillation?
 
 ### 1.3 Skill Hierarchy and Composition
 
@@ -50,35 +76,11 @@ Not all skills are at the same level. Some are universal principles; others are 
 - How to compose multiple skills for complex tasks — e.g., combining a "code style" skill with a "testing strategy" skill when scaffolding a project?
 - How to promote successful task-specific skills to domain-level or general-level over time?
 
-**Related work:** SkillRL (trajectory-to-skill distillation, hierarchical SkillBank, recursive evolution), SAGE (skills in the RL training loop), MetaClaw (skill retrieval and prompt injection).
+**Related work:** SkillRL (trajectory-to-skill distillation, hierarchical SkillBank, recursive evolution), SAGE (skills in the RL training loop), MetaClaw (skill retrieval and prompt injection, semantic skill retrieval with embedding search), context distillation in long-context LLMs.
 
 ---
 
-## 2. Context and Memory Transformation
-
-### How does an agent compress long interaction history into usable knowledge?
-
-An agent that talks to a user every day for months accumulates massive interaction history. Storing raw conversation as memory leads to context explosion, retrieval noise, and degraded performance.
-
-The key insight: **memory should not be what happened, but what was learned.**
-
-**Research questions:**
-
-- **Context-to-skill transformation.** How to convert raw conversational context (corrections, preferences, feedback scattered across hundreds of sessions) into compact skill representations that fit within context budgets?
-
-- **Memory consolidation.** How to merge, compress, and summarize related memories into unified skills — similar to how humans consolidate episodic memory into procedural knowledge during sleep?
-
-- **Selective forgetting.** Not all history is valuable. How to identify and discard outdated preferences, superseded corrections, and low-signal interactions?
-
-- **Retrieval under budget.** Given a fixed context window, how to allocate tokens optimally between the current task, retrieved skills, and recent conversation history?
-
-- **Dynamic context switching.** How to transition between skill-based memory (long-term knowledge) and episodic memory (recent conversation) depending on task demands?
-
-**Related work:** SkillRL (SkillBank as structured memory), MetaClaw (semantic skill retrieval with embedding search), context distillation in long-context LLMs.
-
----
-
-## 3. Master-Apprentice Learning
+## 2. Master-Apprentice Learning
 
 ### How can a strong model teach a small model to be effective?
 
@@ -123,7 +125,7 @@ The small model handles daily interaction using distilled knowledge from the mas
 
 ---
 
-## 4. RL by Daily Words
+## 3. RL by Daily Words
 
 ### How to turn everyday conversation into a reinforcement learning training loop?
 
@@ -173,7 +175,7 @@ Online RL from daily interaction requires production-grade infrastructure.
 
 ---
 
-## 5. Local-Cloud Hybrid: Small LoRA-RL + Large Cloud Model
+## 4. Local-Cloud Hybrid: Small LoRA-RL + Large Cloud Model
 
 ### How to combine a locally fine-tuned small model with a cloud-based large model?
 

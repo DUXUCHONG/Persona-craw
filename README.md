@@ -4,6 +4,7 @@
 </p>
 
 <p align="center">
+  <a href="docs/storytelling.md"><img src="https://img.shields.io/badge/docs-stories-red.svg" alt="Stories"></a>
   <a href="docs/product.md"><img src="https://img.shields.io/badge/docs-product-green.svg" alt="Product"></a>
   <a href="docs/research.md"><img src="https://img.shields.io/badge/docs-research-purple.svg" alt="Research"></a>
   <a href="docs/architecture.md"><img src="https://img.shields.io/badge/docs-architecture-orange.svg" alt="Architecture"></a>
@@ -17,20 +18,6 @@ Most AI assistants are frozen. They never learn from you.
 
 > Your daily conversations are the training data.
 
----
-
-## How It Works
-
-You talk to Persona-craw like any other assistant.
-
-> "Good, but shorter next time."
-
-> "No, always use pytest."
-
-> "I like bullet points, not paragraphs."
-
-Those everyday reactions become learning signals. The system distills them into reusable skills, and the agent gradually adapts to how **you** work.
-
 ```mermaid
 graph LR
     A["Daily Conversation"] --> B["Experience Capture"]
@@ -39,63 +26,66 @@ graph LR
     D --> A
 ```
 
-You don't notice training. You just notice the assistant getting better.
+---
+
+## Stories
+
+> *Full stories: [docs/storytelling.md](docs/storytelling.md)*
+
+**Life** — You ask the assistant to plan a trip. "I prefer boutique hotels." Three weeks later, you're planning Paris — and it already picks boutique hotels without being asked. A month in, meal plans match your taste, emails sound like you, reminders fire on the right days. You stopped explaining weeks ago. Before Persona-craw, you'd re-explain preferences every single session. Now it just knows.
+
+**Work** — First week, you correct everything: "wrong template," "use pytest," "skip the intro." By month two, reports come out right. Code scaffolds match your style. When a hard architecture problem lands, a powerful model figures it out behind the scenes — and your daily model applies that pattern next time automatically. Before, every project started from zero. Now your AI carries your entire engineering profile.
 
 ---
 
-## What It Does
+## Product
 
-| Capability | How It Feels |
-|------------|-------------|
-| **Learns skills from your habits** | You correct it once, it remembers forever — and builds compound skills over time |
-| **Remembers what matters** | Months of history compressed into useful knowledge, not wasted context |
-| **Expert prepares, junior runs** | Tough tasks get top-tier thinking; daily tasks run fast and cheap |
-| **Your corrections train the AI** | "No, not like that" isn't just a correction — it's actual training |
-| **Personal locally, powerful when needed** | Fast local model for daily use, cloud model for hard problems — and knowledge flows back |
+> *Full details: [docs/product.md](docs/product.md)*
 
----
-
-## Scenarios
-
-**Personal Assistant** — You plan a trip. You mention boutique hotels. Next trip, it already knows your style. Complex multi-city logistics? A powerful model handles it behind the scenes, serves you the result in your preferred format.
-
-**Coding Assistant** — You say "keep it flat, use pytest." Every future scaffold follows your style. Tricky architecture problems get explored by a senior model and distilled into patterns your daily model applies automatically.
-
-**Research Assistant** — You tell it "focus on experiments, skip the intro." All future summaries adapt. Dense papers get heavy-model processing; results arrive in your preferred format, fast and cheap.
-
-**Daily Workflows** — Reports, emails, meeting notes. After a few weeks, corrections become rare. Most runs locally and instantly; complex analysis reaches the cloud when needed.
+| Capability | Benefit |
+|------------|---------|
+| **Skill Distillation** | Corrections become permanent skills. You never repeat yourself. |
+| **RL from Daily Words** | Your everyday language trains the AI — "perfect," "no," even silence. |
+| **Master-Apprentice** | Hard tasks get top-tier thinking. Daily tasks are fast and cheap. |
+| **Local-Cloud Hybrid** | Personalized local model + cloud power. Growing smarter over time. |
 
 ---
 
-## Documentation
+## Research
 
-| Page | What It Covers |
-|------|---------------|
-| **[Product](docs/product.md)** | What Persona-craw feels like to use — everyday language, real scenarios |
-| **[Research](docs/research.md)** | The science behind it — skills, memory, master-apprentice, RL from daily words, local-cloud hybrid |
-| **[Architecture](docs/architecture.md)** | System design — how the pieces fit together |
+> *Full details: [docs/research.md](docs/research.md)*
+
+| Direction | Core Question |
+|-----------|--------------|
+| **Skill System** | How to distill daily conversation into reusable skills? Context → memory → skill pipeline. |
+| **Master-Apprentice** | How can a strong model teach a small model? Explore, distill, execute. |
+| **RL by Daily Words** | How to turn natural language into RL reward? Algorithms and infrastructure. |
+| **Local-Cloud Hybrid** | How to combine local LoRA-RL with cloud API? Routing and knowledge transfer. |
 
 ---
 
-## The Big Idea
+## Architecture
 
-Most AI products ship a model and call it done. Persona-craw closes the gap between **using** an AI and **teaching** it — by making them the same thing.
+> *Full details: [docs/architecture.md](docs/architecture.md)*
 
-Your words are the curriculum. Your habits are the reward signal. Your corrections are the training data.
-
-> The agent gets better every day.
+| Layer | Components |
+|-------|-----------|
+| **Serving** | Agent Runtime, Gateway / Proxy |
+| **Data** | Experience Store, Skill Bank |
+| **Learning** | Reward Pipeline, RL Training Engine |
+| **Operations** | Scheduler, Evaluation |
 
 ---
 
 ## Roadmap
 
-**Phase 1 — Skill Foundation.** Extract skills from daily conversation. Build a hierarchical skill bank. Compress context into reusable knowledge. Agent improves through skill accumulation alone.
+**Phase 1** — Skill extraction and retrieval. Agent improves through skill accumulation alone.
 
-**Phase 2 — Daily Words Reward.** Turn everyday language into RL reward signals. Build the implicit reward pipeline. Map corrections, preferences, and behavior into training data.
+**Phase 2** — Daily words → RL reward pipeline. Continuous policy improvement.
 
-**Phase 3 — Master-Apprentice + Online RL.** Strong model explores hard tasks, distills knowledge for the daily model. Online RL training from daily word rewards. Skill evolution through the RL feedback loop.
+**Phase 3** — Master-apprentice distillation + online RL training.
 
-**Phase 4 — Local-Cloud Hybrid + Autonomous Evolution.** Local LoRA-RL personalization. Smart routing between local and cloud models. Continuous self-evolution with safe updates and regression detection.
+**Phase 4** — Local LoRA-RL + cloud hybrid. Autonomous self-evolution.
 
 ---
 
