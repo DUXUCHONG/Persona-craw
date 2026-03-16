@@ -23,8 +23,6 @@ Most AI assistants are frozen. They never learn from you.
 
 You talk to Persona-craw like any other assistant.
 
-When you say things like:
-
 > "Good, but shorter next time."
 
 > "No, always use pytest."
@@ -49,22 +47,23 @@ You don't notice training. You just notice the assistant getting better.
 
 | Capability | How It Feels |
 |------------|-------------|
-| **Learns your preferences** | You correct it once, it remembers forever |
-| **Adapts to your style** | Reports, emails, code — all in your voice |
-| **Gets faster over time** | Less back-and-forth, fewer corrections |
-| **Works across tasks** | Travel, coding, writing, research — skills transfer |
+| **Learns skills from your habits** | You correct it once, it remembers forever — and builds compound skills over time |
+| **Remembers what matters** | Months of history compressed into useful knowledge, not wasted context |
+| **Expert prepares, junior runs** | Tough tasks get top-tier thinking; daily tasks run fast and cheap |
+| **Your corrections train the AI** | "No, not like that" isn't just a correction — it's actual training |
+| **Personal locally, powerful when needed** | Fast local model for daily use, cloud model for hard problems — and knowledge flows back |
 
 ---
 
 ## Scenarios
 
-**Personal Assistant** — You plan a trip. You mention you prefer boutique hotels. Next trip, it already knows.
+**Personal Assistant** — You plan a trip. You mention boutique hotels. Next trip, it already knows your style. Complex multi-city logistics? A powerful model handles it behind the scenes, serves you the result in your preferred format.
 
-**Coding Assistant** — You say "keep it flat, use pytest." Every future project scaffold follows your style.
+**Coding Assistant** — You say "keep it flat, use pytest." Every future scaffold follows your style. Tricky architecture problems get explored by a senior model and distilled into patterns your daily model applies automatically.
 
-**Research Assistant** — You tell it "focus on experiments, skip the intro." All future summaries adapt.
+**Research Assistant** — You tell it "focus on experiments, skip the intro." All future summaries adapt. Dense papers get heavy-model processing; results arrive in your preferred format, fast and cheap.
 
-**Daily Workflows** — Reports, emails, meeting notes. After a few weeks, corrections become rare.
+**Daily Workflows** — Reports, emails, meeting notes. After a few weeks, corrections become rare. Most runs locally and instantly; complex analysis reaches the cloud when needed.
 
 ---
 
@@ -73,7 +72,7 @@ You don't notice training. You just notice the assistant getting better.
 | Page | What It Covers |
 |------|---------------|
 | **[Product](docs/product.md)** | What Persona-craw feels like to use — everyday language, real scenarios |
-| **[Research](docs/research.md)** | The science behind it — self-evolving agents, RL from daily words |
+| **[Research](docs/research.md)** | The science behind it — skills, memory, master-apprentice, RL from daily words, local-cloud hybrid |
 | **[Architecture](docs/architecture.md)** | System design — how the pieces fit together |
 
 ---
@@ -90,13 +89,13 @@ Your words are the curriculum. Your habits are the reward signal. Your correctio
 
 ## Roadmap
 
-**Phase 1** — Skill accumulation from conversation. No model training, just skill extraction and reuse.
+**Phase 1 — Skill Foundation.** Extract skills from daily conversation. Build a hierarchical skill bank. Compress context into reusable knowledge. Agent improves through skill accumulation alone.
 
-**Phase 2** — Reward pipeline. Turn implicit signals (corrections, retries, preferences) into structured learning signals.
+**Phase 2 — Daily Words Reward.** Turn everyday language into RL reward signals. Build the implicit reward pipeline. Map corrections, preferences, and behavior into training data.
 
-**Phase 3** — Online RL. Use daily interaction to fine-tune the agent policy via reinforcement learning.
+**Phase 3 — Master-Apprentice + Online RL.** Strong model explores hard tasks, distills knowledge for the daily model. Online RL training from daily word rewards. Skill evolution through the RL feedback loop.
 
-**Phase 4** — Fully autonomous self-evolution. Night training, skill refinement, continual benchmarking.
+**Phase 4 — Local-Cloud Hybrid + Autonomous Evolution.** Local LoRA-RL personalization. Smart routing between local and cloud models. Continuous self-evolution with safe updates and regression detection.
 
 ---
 
