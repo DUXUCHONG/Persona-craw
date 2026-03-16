@@ -12,7 +12,7 @@
   <a href="docs/storytelling_cn.md"><img src="https://img.shields.io/badge/文档-故事-red.svg" alt="故事"></a>
   <a href="docs/product_cn.md"><img src="https://img.shields.io/badge/文档-产品-green.svg" alt="产品"></a>
   <a href="docs/research_cn.md"><img src="https://img.shields.io/badge/文档-研究-purple.svg" alt="研究"></a>
-  <a href="docs/architecture.md"><img src="https://img.shields.io/badge/文档-架构-orange.svg" alt="架构"></a>
+  <a href="docs/architecture_cn.md"><img src="https://img.shields.io/badge/文档-架构-orange.svg" alt="架构"></a>
 </p>
 
 ---
