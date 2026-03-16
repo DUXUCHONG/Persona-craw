@@ -1,6 +1,6 @@
-# EvoAgentOS — Architecture
+# Persona-craw — Architecture
 
-This document describes the technical architecture of EvoAgentOS. The system is designed as modular infrastructure for building self-improving AI agents that learn continuously from real-world interaction.
+This document describes the technical architecture of Persona-craw. The system is designed as modular infrastructure for building self-improving AI agents that learn continuously from daily conversational interaction.
 
 ---
 
@@ -128,14 +128,14 @@ The gateway is the system's single entry point. It sits between the agent runtim
 
 ### Design: OpenAI-Compatible Proxy
 
-The gateway exposes an OpenAI-compatible API. External agents only need to change `base_url` to route through EvoAgentOS. This minimizes integration cost and makes the system compatible with any OpenAI-client-based agent framework.
+The gateway exposes an OpenAI-compatible API. External agents only need to change `base_url` to route through Persona-craw. This minimizes integration cost and makes the system compatible with any OpenAI-client-based agent framework.
 
 ```
 Agent (any framework)
     |
     | POST /v1/chat/completions
     v
-Gateway (EvoAgentOS)
+Gateway (Persona-craw)
     |
     | 1. Log request
     | 2. Retrieve skills

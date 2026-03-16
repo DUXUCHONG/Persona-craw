@@ -1,129 +1,152 @@
-# EvoAgentOS — Research
+# Persona-craw — Research
 
-EvoAgentOS investigates how AI agents can continuously improve from real-world interaction without explicit human supervision of the learning process.
+## Self-Evolving Agents: Reinforcement Learning from Daily Words
 
-The project addresses a fundamental gap in current LLM agent systems: while these agents can execute complex tasks through tool use, browsing, and code generation, they do not learn from deployment experience. Each session starts from the same static policy, regardless of accumulated interaction history.
+Persona-craw investigates a fundamental question in agent learning:
 
-We propose a unified system that integrates **experience learning**, **skill abstraction**, **memory compression**, and **online reinforcement learning** into a single operational framework. The goal is to develop infrastructure that allows AI agents to evolve safely and continuously while deployed.
+**Can AI agents continuously improve their policy by treating everyday natural language interaction as a reinforcement learning signal?**
+
+Current LLM agents are static after deployment. Regardless of how many conversations they process, they begin every session from the same fixed policy. User corrections, preferences, and feedback are discarded at the end of each session.
+
+We propose a system that closes this gap by treating **daily conversational interaction** as the primary source of training signal. The user's natural language — corrections, approvals, preferences, frustrations — is converted into reward signals that drive online policy updates through reinforcement learning.
+
+The core thesis:
+
+> Everyday words are implicit reward. Daily conversation is online RL.
 
 ---
 
 ## Research Problems
 
-The system is organized around four core research questions, each corresponding to an open problem in the agent learning literature.
+The system is organized around four core research questions.
 
 ---
 
-### 1. Agent Experience Learning
+### 1. RL from Daily Words: Implicit Reward Extraction
 
-**Central Question:** How can agents extract training signals from natural interaction without explicit annotation?
+**Central Question:** How can natural language feedback be converted into reward signals for reinforcement learning?
 
-Deployed LLM agents generate rich interaction data — tool calls, environment observations, user responses, task outcomes — yet this data is typically discarded after each session. The challenge is to transform this stream of interaction into a reliable source of learning signal.
+Users do not provide structured feedback. They do not click thumbs-up or rate responses on a scale. Instead, they express satisfaction, correction, and preference through natural language:
+
+- *"Perfect."* — positive reward
+- *"No, not like that."* — negative reward
+- *"I prefer shorter answers."* — preference signal
+- *"Try the other API."* — corrective signal
+- *"That's wrong again."* — repeated failure penalty
+- Silence / moving on — weak positive or neutral
+
+The research challenge is to build a **reward extraction pipeline** that reliably maps these diverse, noisy, and often ambiguous natural language signals into scalar or structured reward values suitable for RL training.
 
 **Research Directions:**
 
-- **Implicit reward learning.** Users rarely provide explicit feedback. Instead, signals must be inferred from behavioral patterns: whether the user accepts or rejects a suggestion, retries a task, continues a workflow, or abandons the session. The mapping from these natural signals to reward values is noisy and delayed, requiring robust reward inference methods.
+- **Natural language reward classification.** Classifying user utterances into reward categories (approval, correction, preference, frustration, neutral) using lightweight models or LLM-based judges.
 
-- **Trajectory mining.** Raw interaction trajectories contain both successful strategies and failure modes. Identifying which subsequences contribute to positive outcomes — and which lead to errors — requires temporal credit assignment over long, partially observable episodes.
+- **Implicit behavioral signals.** Beyond explicit language, reward can be inferred from user behavior: whether the user accepts or rejects a suggestion, retries a task, continues a workflow, or abandons the session. These behavioral patterns provide additional training signal.
 
-- **Online reinforcement learning.** Unlike offline RL from static datasets, online agent learning must handle non-stationary task distributions, evolving user preferences, and the constraint that the agent must remain functional during training. This demands sample-efficient algorithms that can learn from small batches of recent experience.
+- **Delayed and sparse reward.** Users may not react immediately. A correction in turn 8 may refer to a decision made in turn 2. Propagating reward to the correct earlier action requires temporal credit assignment over long, partially observable episodes.
 
-**Related Work:** OpenClaw-RL demonstrates that next-state feedback can serve as an online learning signal. MinT provides lightweight infrastructure for online training loops. Claw-R1 proposes a DataPool architecture that decouples experience collection from training consumption.
+- **Reward noise and ambiguity.** Natural language is inherently ambiguous. "That's interesting" may be positive or dismissive. The system must handle noisy reward signals robustly, avoiding overfitting to misinterpreted feedback.
+
+**Related Work:** OpenClaw-RL demonstrates that next-state feedback can serve as online learning signal. RLAIF explores AI-generated feedback as a substitute for human annotation. Process reward models (PRM) provide step-level reward signals for reasoning tasks.
 
 ---
 
-### 2. Skill Abstraction
+### 2. Experience-to-Skill Abstraction
 
 **Central Question:** How can raw interaction trajectories be transformed into reusable, transferable skills?
 
-Naive storage of past trajectories as memory leads to retrieval inefficiency and context pollution. A more principled approach treats experience not as data to be recalled, but as material to be **abstracted** into structured, reusable strategies.
+Storing past interactions as raw memory leads to context explosion and retrieval inefficiency. A more principled approach treats daily experience not as data to be recalled, but as material to be **abstracted** into structured strategies.
+
+When a user repeatedly corrects the same pattern — "always use pytest," "keep it concise," "check the staging server first" — the system should distill these corrections into a persistent **skill** that the agent applies proactively in future tasks.
 
 **Research Directions:**
 
-- **Skill distillation.** Given a collection of successful trajectories for a task class, how should the common strategy be extracted? This involves identifying invariant action patterns, abstracting away task-specific details, and producing a representation that generalizes to unseen instances.
+- **Skill distillation from conversational feedback.** Extracting structured skills (trigger condition, strategy, anti-pattern) from clusters of natural language corrections and preferences.
 
-- **Hierarchical skill organization.** Skills naturally exist at multiple levels of abstraction. General skills (e.g., "verify preconditions before executing irreversible actions") apply across domains. Domain skills (e.g., "check rate limits before bulk API calls") apply within specific contexts. Task-specific skills encode narrow but highly effective procedures. The system must support this hierarchy and select the appropriate level at inference time.
+- **Hierarchical skill organization.** General skills ("verify before executing irreversible actions") apply everywhere. Domain skills ("use pytest for Python projects") apply within specific contexts. Task-specific skills ("this user wants experiment-heavy paper summaries") apply narrowly. The system must support this hierarchy.
 
-- **Skill evolution.** Skills should not be static once extracted. As the agent accumulates more experience, existing skills should be refined, merged when redundant, and deprecated when they no longer improve performance. This recursive evolution process is critical for long-term system quality.
+- **Skill evolution.** As more daily interactions accumulate, existing skills should be refined, merged when redundant, and deprecated when contradicted by newer feedback. This recursive evolution keeps the skill bank current.
 
-- **Skill quality assessment.** Not all distilled skills are useful. Some may encode spurious correlations or overly specific patterns. The system requires methods for evaluating skill quality, measuring transferability, and filtering low-value entries from the skill bank.
+- **Skill quality assessment.** Not all extracted skills are useful. Some may encode noise or overly specific patterns. Methods for evaluating skill transferability and filtering low-value skills are needed.
 
-**Related Work:** SkillRL introduces the SkillBank concept with trajectory-to-skill distillation and recursive skill evolution. SAGE integrates skills into the RL training loop, using skill utilization as a reward component. MetaClaw implements skill retrieval and injection at inference time via system prompt augmentation.
+**Related Work:** SkillRL introduces trajectory-to-skill distillation with hierarchical SkillBank and recursive evolution. SAGE integrates skills into the RL training loop. MetaClaw implements skill retrieval and injection via system prompt augmentation.
 
 ---
 
 ### 3. Agent Memory Compression
 
-**Central Question:** How can agent memory be made compact, relevant, and useful under strict context budgets?
+**Central Question:** How can long-term agent knowledge be represented compactly under strict context budgets?
 
-LLM agents operating over long horizons accumulate interaction histories that quickly exceed context window limits. Raw trajectory storage is both wasteful and counterproductive — injecting irrelevant past interactions degrades current performance.
+An agent that processes hundreds of daily conversations cannot store all interaction history. Raw trajectory storage leads to context overflow and degrades inference quality.
+
+Persona-craw proposes **skill-based memory**: instead of remembering what happened, the agent remembers what it learned. Skills serve as compressed, structured knowledge that directly supports task execution.
 
 **Research Directions:**
 
-- **Skill-based memory representation.** Rather than storing interaction history directly, the agent's long-term memory can be represented as a skill bank. This provides a compressed, structured alternative to episodic memory that directly supports task execution.
+- **Skill bank as memory.** Replacing episodic memory with a curated skill bank. Each skill is a compressed representation of many past interactions, organized for efficient retrieval.
 
-- **Context distillation.** When the full skill bank exceeds context capacity, the system must select and compress the most relevant knowledge for the current task. This involves semantic similarity matching, recency weighting, and domain filtering to construct an optimal context window.
+- **Context distillation.** When the skill bank grows large, selecting and compressing the most relevant knowledge for a given task becomes critical. This involves semantic matching, recency weighting, and domain filtering.
 
-- **Trajectory summarization.** For episodes that have not yet been distilled into skills, intermediate summarization methods are needed to preserve key decision points while discarding low-information steps.
+- **Forgetting and consolidation.** Not all skills should persist indefinitely. Mechanisms for forgetting outdated skills (user preference changed) and consolidating related skills (merging similar corrections) are needed.
 
-- **Retrieval mechanisms.** Efficient retrieval over the skill bank requires embedding-based indexing, re-ranking for task relevance, and methods to handle the cold-start problem when skills are sparse.
+- **Retrieval under budget.** Given a fixed context window, how should the system allocate tokens between task description, retrieved skills, and conversation history? Optimizing this allocation is an open problem.
 
-**Related Work:** SkillRL's hierarchical SkillBank provides a structured alternative to flat memory. MetaClaw implements semantic skill retrieval with embedding-based search and prompt injection. Recent work on context distillation in long-context LLMs offers complementary techniques.
+**Related Work:** SkillRL's hierarchical SkillBank provides structured alternatives to flat memory. MetaClaw implements semantic skill retrieval with embedding-based search. Recent work on context distillation in long-context LLMs offers complementary techniques.
 
 ---
 
 ### 4. Online Training Infrastructure
 
-**Central Question:** How can agent training be performed safely and efficiently during continuous deployment?
+**Central Question:** How can agents safely perform reinforcement learning from daily interaction while remaining functional?
 
-Building a system where agents learn online requires more than algorithms — it requires engineering infrastructure that handles asynchronous data collection, reward computation, policy updates, and safe model deployment as concurrent, decoupled processes.
+Building a system where daily conversations drive online RL requires infrastructure that handles asynchronous data collection, reward extraction, policy updates, and safe model deployment as concurrent, decoupled processes.
 
 **Research Directions:**
 
-- **Distributed rollout collection.** Agent interactions happen across diverse environments (browser, terminal, IDE, APIs) and must be collected, structured, and buffered without blocking the agent's primary serving function.
+- **Conversation-to-training pipeline.** Converting ongoing conversations into structured training data (state, action, reward, next state) in real time, without blocking the agent's response latency.
 
-- **Asynchronous reward computation.** Reward signals may require external verification (running tests, checking task completion, evaluating with a judge model). These computations must be decoupled from the serving path and processed asynchronously.
+- **Training-serving separation.** The RL training loop must operate independently of the serving loop. A data intermediary buffers experience for training consumption, and mechanisms for hot-swapping model weights ensure uninterrupted service.
 
-- **Training-serving separation.** The training loop must operate independently of the serving loop. This requires a data intermediary (DataPool) that buffers experience for training consumption, version-controlled model checkpoints, and mechanisms for hot-swapping model weights without service interruption.
+- **Safe update scheduling.** Model updates from daily RL carry risk — a poorly trained checkpoint may degrade the user's experience. The system must support scheduled training windows (idle time, night hours), regression testing, and automatic rollback.
 
-- **Safe update scheduling.** Model updates carry risk — a poorly trained checkpoint can degrade user experience. The system must support scheduled training windows (idle time, night hours), regression testing before deployment, and automatic rollback on performance degradation.
+- **Sample efficiency.** Daily interaction produces limited data compared to synthetic training. The RL algorithm must be highly sample-efficient, learning meaningful policy updates from small batches of real conversation.
 
-**Related Work:** Claw-R1 introduces the Gateway/DataPool architecture for decoupling agent serving from training. OpenClaw-RL demonstrates a four-component async loop (serving, rollout, judging, training). MetaClaw implements idle-window model updates and safe checkpoint management. Tinker and MinT provide distributed training backends.
+**Related Work:** Claw-R1 introduces the Gateway/DataPool architecture for decoupling serving from training. OpenClaw-RL demonstrates a four-component async loop (serving, rollout, judging, training). MetaClaw implements idle-window model updates. Tinker and MinT provide distributed training backends.
 
 ---
 
 ## Research Contributions
 
-This project aims to make contributions in the following areas:
+This project aims to contribute to the following areas:
 
-1. **Experience-driven agent learning** — Methods for converting natural interaction into training signal without explicit annotation
-2. **Skill-based knowledge representation** — Trajectory-to-skill distillation with hierarchical organization and recursive evolution
-3. **Memory-efficient agent architectures** — Skill bank as compressed, structured long-term memory with semantic retrieval
-4. **Online RL infrastructure** — Modular, decoupled system design for safe continuous agent training
+1. **RL from natural language** — Methods for extracting reward signals from everyday conversational feedback
+2. **Conversational skill distillation** — Transforming daily corrections and preferences into reusable agent skills
+3. **Skill-based agent memory** — Compressed, structured long-term knowledge representation with semantic retrieval
+4. **Online RL infrastructure for conversational agents** — Modular system design for safe continuous learning from daily interaction
 
 ---
 
 ## Future Directions
 
-### Implicit Reward Learning
+### Reward Model for Daily Language
 
-Developing robust methods for inferring reward from natural user behavior — acceptance patterns, retry frequency, session continuity, output adoption rates — without requiring any explicit feedback interface.
+Training specialized reward models that understand the nuances of everyday conversational feedback — distinguishing genuine approval from politeness, sarcasm from correction, preference from passing remark.
 
 ### Skill-Policy Co-Evolution
 
-Investigating the coupled dynamics of skill bank quality and policy performance. Skills inform policy through prompt injection; policy performance generates new trajectories that update skills. Understanding and optimizing this feedback loop is an open problem.
+Investigating the coupled dynamics between the skill bank and the RL policy. Skills inform policy through prompt injection; policy performance generates new conversations that update skills. Optimizing this feedback loop is an open problem.
 
-### Hierarchical Memory Systems
+### Personalization vs. Generalization
 
-Designing multi-level memory architectures that combine episodic memory (recent interactions), semantic memory (distilled skills), and procedural memory (learned policy weights) with principled methods for allocating context budget across levels.
+Understanding the tension between personalizing to one user's style and maintaining general capability. How much should an agent specialize, and when does specialization hurt performance on novel tasks?
 
-### Continual Agent Benchmarking
+### Multi-User Skill Transfer
 
-Building evaluation frameworks for agents that evolve over time. Standard benchmarks measure static performance; continual benchmarks must track improvement rate, skill accumulation, regression detection, and long-term stability.
+Extending from single-user learning to multi-user settings. Can skills learned from one user's daily interactions benefit another user with similar preferences? How should shared and personal skill banks interact?
 
-### Multi-Agent Skill Sharing
+### Longitudinal Evaluation
 
-Extending the skill bank from a single-agent to a multi-agent setting, where agents operating in different domains can contribute skills to a shared pool, enabling cross-domain transfer and collective improvement.
+Building evaluation frameworks for agents that evolve over weeks and months. Standard benchmarks measure static performance; longitudinal benchmarks must track improvement rate, preference alignment, regression detection, and user satisfaction over time.
 
 ---
 
@@ -140,4 +163,4 @@ Extending the skill bank from a single-agent to a multi-agent setting, where age
 - Tinker — Distributed RL training orchestration
 - DeepSeek-R1 — GRPO for long-chain reasoning ([arXiv 2501.12948](https://arxiv.org/abs/2501.12948))
 
-For a comprehensive survey of the Agentic RL landscape, see [Awesome Agentic RL](https://github.com/DUXUCHONG/Awesome-Agentic-RL).
+Survey: [Awesome Agentic RL](https://github.com/DUXUCHONG/Awesome-Agentic-RL)
